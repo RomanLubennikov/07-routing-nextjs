@@ -1,21 +1,28 @@
-"use client";
-
-import { useRouter } from "next/navigation";
-import Modal from "@/components/Modal/Modal";
+import { QueryClient, dehydrate } from "@tanstack/react-query";
+import { HydrationBoundary } from "@tanstack/react-query";
+import { fetchNoteById } from "@/lib/api";
 import NotePreviewClient from "./NotePreview.client";
 
 interface InterceptedNotePageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default function InterceptedNotePage({
+export default async function InterceptedNotePage({
   params,
 }: InterceptedNotePageProps) {
-  const router = useRouter();
+  const { id } = await params;
+  const qc = new QueryClient();
+
+  await qc.prefetchQuery({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+  });
+
+  const dehydratedState = dehydrate(qc);
 
   return (
-    <Modal onClose={() => router.back()}>
-      <NotePreviewClient id={params.id} />
-    </Modal>
+    <HydrationBoundary state={dehydratedState}>
+      <NotePreviewClient id={id} />
+    </HydrationBoundary>
   );
 }
