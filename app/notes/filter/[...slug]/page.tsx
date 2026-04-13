@@ -5,13 +5,13 @@ import NotesClient from "../../Notes.client";
 import type { NoteTag } from "@/types/note";
 
 interface FilterPageProps {
-  params: Promise<{ tag: string[] }>;
+  params: Promise<{ slug: string[] }>;
 }
 
 export default async function FilterNotesPage({ params }: FilterPageProps) {
-  const { tag } = await params;
+  const { slug } = await params;
 
-  const tagFromParams = tag[0] ?? "all";
+  const tagFromParams = slug[0] ?? "all";
   const normalizedTag =
     tagFromParams !== "all" ? (tagFromParams as NoteTag) : undefined;
 
@@ -37,4 +37,3 @@ export default async function FilterNotesPage({ params }: FilterPageProps) {
     </HydrationBoundary>
   );
 }
-
