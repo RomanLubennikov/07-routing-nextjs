@@ -1,16 +1,5 @@
-import axios from "axios";
-import type { Note, CreateNoteInput, NoteTag } from "@/types/note";
-
-const BASE_URL = "https://notehub-public.goit.study/api";
-const token = process.env.NEXT_PUBLIC_NOTEHUB_TOKEN as string;
-
-const api = axios.create({
-  baseURL: BASE_URL,
-  headers: {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  },
-});
+import type { CreateNoteInput, Note, NoteTag } from "@/types/note";
+import { api } from "./client";
 
 export interface FetchNotesParams {
   page?: number;
@@ -29,8 +18,7 @@ export interface FetchNotesResponse {
 export async function fetchNotes(params: FetchNotesParams) {
   const { tag, ...rest } = params;
 
-  const queryParams =
-    tag && tag !== ("all" as NoteTag) ? { ...rest, tag } : rest;
+  const queryParams = tag ? { ...rest, tag } : rest;
 
   const res = await api.get<FetchNotesResponse>("/notes", {
     params: queryParams,
